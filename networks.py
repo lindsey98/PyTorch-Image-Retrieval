@@ -87,6 +87,8 @@ class EmbeddingNetwork(BaseNetwork):
                 self.attention = SelfAttention(2208, 'relu')
             elif self.model_name == 'resnet101':
                 self.attention = SelfAttention(2048, 'relu')
+            elif self.model_name == 'resnet50':
+                self.attention = SelfAttention(2048, 'relu')
             elif self.model_name == 'inceptionv3':
                 self.attention = SelfAttention(2048, 'relu')
             elif self.model_name == 'seresnext':
@@ -133,6 +135,11 @@ def initialize_model(model_name, embedding_dim, feature_extracting, use_pretrain
         set_parameter_requires_grad(model_ft, feature_extracting)
         num_features = model_ft.fc.in_features
         model_ft.fc = nn.Linear(num_features, embedding_dim)
+    elif model_name == "resnet50":
+        model_ft = models.resnet50(pretrained=use_pretrained)
+        set_parameter_requires_grad(model_ft, feature_extracting)
+        num_features = model_ft.fc.in_features
+        model_ft.fc = nn.Linear(num_features, embedding_dim)
     elif model_name == "inceptionv3":
         model_ft = models.inception_v3(pretrained=use_pretrained)
         set_parameter_requires_grad(model_ft, feature_extracting)
@@ -152,3 +159,4 @@ def initialize_model(model_name, embedding_dim, feature_extracting, use_pretrain
 # GeM Pooling
 def gem(x, p=3, eps=1e-6):
     return F.adaptive_avg_pool2d(x.clamp(min=eps).pow(p), output_size=1).pow(1. / p)
+
